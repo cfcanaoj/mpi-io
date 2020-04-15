@@ -1,7 +1,6 @@
       module binmod
       implicit none
       private
-      character(40)::usrfile
       integer::SAG1D,SAG2D,SAG3D,SAD3D
       public bindmp
       contains
@@ -15,10 +14,11 @@ c
       integer :: nx1, nx2, nx3
 
       integer strtoi,incr
-      character*(10) :: datadir
+      character(10) :: datadir
       data datadir /"bindata/"/ 
-      character*(15) :: unffile
-      character*(30) :: fpathbin,fpathunf
+      character(15) :: unffile
+      character(40)::usrfile
+      character(30) :: fpathbin,fpathunf
       integer, parameter :: unitunf=560
       integer,save:: unitd3d,unitg1d, unitg2d, unitg3d, unitg0d
       data unitd3d / 512 /
@@ -70,7 +70,7 @@ c==============
      & 4, ! dimension of array
      & Asize,Ssize,Start,
      & MPI_ORDER_FORTRAN,
-     & MPI_DOUBLE_PRECISION, ! This is changed to double by cpp
+     & MPI_DOUBLE_PRECISION,
      & SAD3D, ! Data type of Subarray for data 3D
      & ierr)
          call MPI_TYPE_COMMIT(SAD3D,ierr)
@@ -94,7 +94,7 @@ c==============
       call MPI_FILE_SET_VIEW(
      &  unitd3d,  ! file path
      &     idisp,  ! 
-     & MPI_FLOAT,  ! that is replaced to double by cpp
+     & MPI_DOUBLE_PRECISION, 
      &     SAD3D,  ! data type
      & 'NATIVE', MPI_INFO_NULL,ierr)
 
@@ -102,7 +102,7 @@ c==============
      &   unitd3d,  ! file path
      &    data3D,  ! the data
      & (iee-iss+1)*(jee-jss+1)*(kee-kss+1)*nfld, ! total data number
-     & MPI_FLOAT,  ! that is replaced to double by cpp
+     & MPI_DOUBLE_PRECISION,  
      &      stat,
      &      ierr)
       call MPI_FILE_CLOSE(unitd3d,ierr)

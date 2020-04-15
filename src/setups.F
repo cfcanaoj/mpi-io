@@ -29,22 +29,33 @@
 
       end module  mpipara
 
-      subroutine SetParameters
-      use root
+      subroutine InitializeMPI
+      use mpipara
       implicit none
+c Initialize MPI
+      call MPI_INIT( ierr )
+      call MPI_COMM_SIZE( MPI_COMM_WORLD, nprocs_w, ierr )
+      call MPI_COMM_RANK( MPI_COMM_WORLD, myid_w  , ierr )
+
+      return
+      end subroutine InitializeMPI
+
+      subroutine ReadParameters
+      use root
+      use mpipara
+      implicit none
+      character(20)::filename
+      data filename /"inputparam"/
+      logical::flag
+
+      namelist /totalgrid/ ntotal,nfld
+      namelist /paragrid/ ntiles,periodic
+
+      nfld=200
 
       ntotal(1)=512
       ntotal(2)=64
       ntotal(3)=128
-
-      return
-      end subroutine SetParameters
-
-      subroutine SetMPIParameters
-      use mpipara
-      implicit none
-      integer::key,color
-      integer::np_hyd
 
       ntiles(1)=16
       ntiles(2)=8
@@ -53,10 +64,32 @@
       periodic(2)=.false.
       periodic(3)=.false.
 
-c Initialize MPI
-      call MPI_INIT( ierr )
-      call MPI_COMM_SIZE( MPI_COMM_WORLD, nprocs_w, ierr )
-      call MPI_COMM_RANK( MPI_COMM_WORLD, myid_w  , ierr )
+       INQUIRE(FILE = filename,EXIST = flag)
+       if(flag) then
+          open(unit=1,file=filename,status='old')
+       else   ! flag       
+          write(6,*) filename,' not found'
+          call MPI_FINALIZE ( ierr )
+          stop 'Cannot Open input parameter file'
+       end if ! flag 
+
+      if(myid_w .eq. 0) then
+       read(1,totalgrid)
+       read(1,paragrid)
+      endif ! myid_w
+
+      call MPI_BCAST(ntotal,3,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+      call MPI_BCAST(ntiles,3,MPI_INTEGER,0,MPI_COMM_WORLD,ierr)
+      call MPI_BCAST(periodic,3,MPI_LOGICAL,0,MPI_COMM_WORLD,ierr)
+
+      return
+      end subroutine ReadParameters
+
+      subroutine SetMPIParameters
+      use mpipara
+      implicit none
+      integer::key,color
+      integer::np_hyd
 
 c Making 3D strucure
       np_hyd = ntiles(1)*ntiles(2)*ntiles(3)
@@ -89,10 +122,11 @@ c
       use mpipara
       implicit none
 
-      nfld=200
       npart(:) = ntotal(:)/ntiles(:)
 
-      if(myid_w .eq. 0 )write(6,*) "grid for 1 procss",npart(:)
+      if(myid_w .eq. 1 )write(6,*) "toral grid       ",ntotal(:)
+      if(myid_w .eq. 1 )write(6,*) "parallel tiles   ",ntiles(:)
+      if(myid_w .eq. 1 )write(6,*) "grid for 1 procss",npart(:)
 
       allocate(vpart(nfld,npart(1),npart(2),npart(3)))
 

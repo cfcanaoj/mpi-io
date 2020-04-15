@@ -3,7 +3,8 @@
       use binmod
       implicit none
       
-      call SetParameters
+      call InitializeMPI
+      call ReadParameters
       call SetMPIParameters
       call AllocateVariable
 
