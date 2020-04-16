@@ -98,7 +98,7 @@ c==============
      &     SAD3D,  ! data type
      & 'NATIVE', MPI_INFO_NULL,ierr)
 
-      call MPI_FILE_WRITE(
+      call MPI_FILE_WRITE_ALL(
      &   unitd3d,  ! file path
      &    data3D,  ! the data
      & (iee-iss+1)*(jee-jss+1)*(kee-kss+1)*nfld, ! total data number
