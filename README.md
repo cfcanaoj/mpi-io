@@ -1,11 +1,10 @@
 # A sample code for Parallel IO
 
 ## Download
-
-   git clone git@github.com:takiwaki/PIO
-   cd PIO
-   
-
+    
+    git clone git@github.com:takiwaki/PIO
+    cd PIO
+    
 ## Proceadure
     
     cd src
