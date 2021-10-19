@@ -1,20 +1,30 @@
-
-
+##########################
+# setup for XC50 of CfCA
+##########################
 FC=ftn -extend-source
 OPT=-g -check all -fpe0
+
+##########################
+# setup for Msize Server
+##########################
+#FC=mpif90
+#OPT=-g
+
+##########################
+# Main
+##########################
+
 EXE=../iotest
 
 OBJ=  main.o setups.o bindmp.o
+
 ${EXE}: ${OBJ}
 	${FC} ${OPT} main.o bindmp.o setups.o -o ${EXE}
 
-clean:
-	rm -fr *~ *.o *.mod ${EXE}
+.SUFFIXES: .f90 .o
 
-.SUFFIXES: .F.o
-
-.F.o:
-	${FC} ${OPT} -c $*.F
+.f90.o:
+	${FC} ${OPT} -c $*.f90
 
 main.o: setups.o bindmp.o
 
@@ -22,3 +32,11 @@ setups.o:
 
 bindmp.o: setups.o
 
+##########################
+# PHONY
+##########################
+
+.PHONY: clean
+
+clean:
+	rm -fr *~ *.o *.mod ${EXE}
