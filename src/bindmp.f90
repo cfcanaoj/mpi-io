@@ -4,12 +4,12 @@
       integer::SAG1D,SAG2D,SAG3D,SAD3D
       public bindmp
       contains
-c
+
       subroutine bindmp
       use root, nfldhyd=>nfld
       use mpipara
       implicit NONE
-c
+
       integer :: i, j, k, l, m, n
       integer :: nx1, nx2, nx3
 
@@ -37,14 +37,14 @@ c
       integer::itot,jtot,ktot
       integer:: nfld
       integer::lastnum
-      real(8),dimension(:,:),allocatable,save :: grid1D,grid2D,grid3D
+      real(8),dimension(:,:),allocatable,save :: grid1D,grid2D,grid3D &
      &                                          ,grid0D
       real(8),dimension(:,:,:,:),allocatable,save :: data3D
       integer,dimension(4)::Asize,Ssize,Start
       integer(kind=MPI_OFFSET_KIND) idisp
       data idisp / 0 /
 
-c==============
+!==============
 
       iss = 1; jss = 1; kss = 1
       iee = npart(1); jee = npart(2); kee = npart(3)
@@ -66,12 +66,12 @@ c==============
          Start(3) = (jee-jss+1) * coords(2)
          Start(4) = (kee-kss+1) * coords(3)
 
-         call MPI_TYPE_CREATE_SUBARRAY(
-     & 4, ! dimension of array
-     & Asize,Ssize,Start,
-     & MPI_ORDER_FORTRAN,
-     & MPI_DOUBLE_PRECISION,
-     & SAD3D, ! Data type of Subarray for data 3D
+         call MPI_TYPE_CREATE_SUBARRAY(&
+     & 4, &! dimension of array
+     & Asize,Ssize,Start,&
+     & MPI_ORDER_FORTRAN,&
+     & MPI_DOUBLE_PRECISION,&
+     & SAD3D,& ! Data type of Subarray for data 3D
      & ierr)
          call MPI_TYPE_COMMIT(SAD3D,ierr)
 
@@ -87,31 +87,31 @@ c==============
       write(usrfile,"(a3,a2,a1,i5.5)")'d3d',id,'.',incr
       fpathbin = trim(datadir)//usrfile
 
-      call MPI_FILE_OPEN(MPI_COMM_WORLD,
-     &                         fpathbin,  ! file path
-     &  MPI_MODE_WRONLY+MPI_MODE_CREATE,
+      call MPI_FILE_OPEN(MPI_COMM_WORLD, &
+     &                         fpathbin, & ! file path
+     &  MPI_MODE_WRONLY+MPI_MODE_CREATE, &
      &            MPI_INFO_NULL,unitd3d,ierr)
-      call MPI_FILE_SET_VIEW(
-     &  unitd3d,  ! file path
-     &     idisp,  ! 
-     & MPI_DOUBLE_PRECISION, 
-     &     SAD3D,  ! data type
+      call MPI_FILE_SET_VIEW(&
+     &  unitd3d,  &! file path
+     &     idisp, & ! 
+     & MPI_DOUBLE_PRECISION,& 
+     &     SAD3D, & ! data type
      & 'NATIVE', MPI_INFO_NULL,ierr)
 
-      call MPI_FILE_WRITE_ALL(
-     &   unitd3d,  ! file path
-     &    data3D,  ! the data
-     & (iee-iss+1)*(jee-jss+1)*(kee-kss+1)*nfld, ! total data number
-     & MPI_DOUBLE_PRECISION,  
-     &      stat,
+      call MPI_FILE_WRITE_ALL(&
+     &   unitd3d,  &! file path
+     &    data3D,  &! the data
+     & (iee-iss+1)*(jee-jss+1)*(kee-kss+1)*nfld,& ! total data number
+     & MPI_DOUBLE_PRECISION,&  
+     &      stat,&
      &      ierr)
       call MPI_FILE_CLOSE(unitd3d,ierr)
 
       if (myid_w .eq. 0) then
-         write(6,"('Binary data dump written at time=',1pe12.5,
+         write(6,"('Binary data dump written at time=',1pe12.5,&
      &   ' cycle=',i0)") time,nhy
       endif
-c
+
       is_inited = .true.
 
       return

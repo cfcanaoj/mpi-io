@@ -32,7 +32,7 @@
       subroutine InitializeMPI
       use mpipara
       implicit none
-c Initialize MPI
+! Initialize MPI
       call MPI_INIT( ierr )
       call MPI_COMM_SIZE( MPI_COMM_WORLD, nprocs_w, ierr )
       call MPI_COMM_RANK( MPI_COMM_WORLD, myid_w  , ierr )
@@ -91,7 +91,7 @@ c Initialize MPI
       integer::key,color
       integer::np_hyd
 
-c Making 3D strucure
+! Making 3D strucure
       np_hyd = ntiles(1)*ntiles(2)*ntiles(3)
       color = int(myid_w/np_hyd)
       key   = myid_w   
@@ -99,19 +99,19 @@ c Making 3D strucure
       call MPI_COMM_SIZE( mpi_comm_hyd, nprocs_hyd, ierr )
       call MPI_COMM_RANK( mpi_comm_hyd, myid_hyd , ierr )     
 
-c Create a virtual Cartesian topology for the domain decomposition.
-c
-      call MPI_CART_CREATE( mpi_comm_hyd, 3, ntiles, periodic
+! Create a virtual Cartesian topology for the domain decomposition.
+!
+      call MPI_CART_CREATE( mpi_comm_hyd, 3, ntiles, periodic &
      &                    , reorder, comm3d, ierr )
       call MPI_COMM_RANK( comm3d, myid,     ierr )
       call MPI_COMM_SIZE( comm3d, nprocs,   ierr )
-c
-c Find the ranks of my neighbors; find my virtual Cartesian coords.
-c
+!
+! Find the ranks of my neighbors; find my virtual Cartesian coords.
+!
       call MPI_CART_SHIFT( comm3d, 0, 1, n1m, n1p, ierr )
       call MPI_CART_SHIFT( comm3d, 1, 1, n2m, n2p, ierr )
       call MPI_CART_SHIFT( comm3d, 2, 1, n3m, n3p, ierr )
-c
+!
       call MPI_CART_COORDS( comm3d, myid, 3, coords, ierr )
       
       return
