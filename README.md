@@ -1,13 +1,21 @@
 # A sample code for Parallel IO
 
+## Download
+
+   git clone git@github.com:takiwaki/PIO
+   cd PIO
+   
+
 ## Proceadure
     
-    mkdir bindata 
     cd src
     make
     cd ..
     qsub pbs_xc.csh
-   
+
+## Data
+Data is damped in `bindata/`.
+
 ## Change Parameters
     
     vim inputparam
