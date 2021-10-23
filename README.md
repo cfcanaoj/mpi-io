@@ -2,8 +2,8 @@
 
 ## Download
     
-    git clone git@github.com:takiwaki/PIO
-    cd PIO
+    git clone git@github.com:cfcanaoj/mpi-io mpi-io
+    cd mpi-io
     
 ## Proceadure
     
