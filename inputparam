@@ -1,2 +1,2 @@
-&totalgrid ntotal(1)=512,ntotal(2)=64,ntotal(3)=128, nfld=200 /
+&totalgrid ntotal(1)=128,ntotal(2)=32,ntotal(3)=64, nfld=10 /
 &paragrid ntiles(1)=2,ntiles(2)=2,ntiles(3)=2,periodic(1)=.false.,periodic(2)=.false.,periodic(3)=.false. /
