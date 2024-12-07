@@ -8,6 +8,9 @@
       integer::nhy
       real(8)::time
       real(8),dimension(:,:,:,:),allocatable:: vpart
+      real(8),dimension(:),allocatable:: xc,xe
+      real(8),dimension(:),allocatable:: yc,ye
+      real(8),dimension(:),allocatable:: zc,ze
 
       end module  root
 
@@ -121,6 +124,7 @@
       use root
       use mpipara
       implicit none
+      integer:: i,j,k
 
       npart(:) = ntotal(:)/ntiles(:)
 
@@ -128,9 +132,38 @@
       if(myid_w .eq. 1 )write(6,*) "parallel tiles   ",ntiles(:)
       if(myid_w .eq. 1 )write(6,*) "grid for 1 procss",npart(:)
 
+!========================
       allocate(vpart(nfld,npart(1),npart(2),npart(3)))
 
       vpart(:,:,:,:) = 0.0d0
+!========================
+! here xc, yc, zc do not need the last mesh but allocate it for the later convenience
+      allocate(xc(npart(1)+1),xe(npart(1)+1))
+      allocate(yc(npart(2)+1),ye(npart(2)+1))
+      allocate(zc(npart(3)+1),ze(npart(3)+1))
 
+!========================
+      do i=1,npart(1)+1
+         xe(i) = i-1 + coords(1)*npart(1)
+      enddo
+      do i=1,npart(1)
+         xc(i) = 0.5d0*(xe(i)+xe(i+1))
+      enddo
+!========================      
+      do j=1,npart(2)+1
+         ye(j) = j-1 + coords(2)*npart(2)
+      enddo
+      do j=1,npart(2)
+         yc(j) = 0.5d0*(ye(j)+ye(j+1))
+      enddo
+!========================
+      do k=1,npart(3)+1
+         ze(k) = k-1 + coords(3)*npart(3)
+      enddo
+      do k=1,npart(3)
+         zc(k) = 0.5d0*(ze(k)+ze(k+1))
+      enddo
+!========================
+ 
       return
       end subroutine AllocateVariable

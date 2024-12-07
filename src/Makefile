@@ -1,9 +1,10 @@
 ##########################
 # setup for XC50 of CfCA
 ##########################
-FC=mpiifx -extend-source
-#OPT=-g -O0 -check all -fpe0
-OPT=-g -O2
+FC=mpiifx -fc=ifort -diag-disable=10448
+OPT=-g -O0 -check all -fpe0
+#LOPT=-Wl,--no-relax
+#OPT=-g -O2
 
 ##########################
 # setup for Msize Server
@@ -20,7 +21,7 @@ EXE=../iotest
 OBJ=  main.o setups.o bindmp.o
 
 ${EXE}: ${OBJ}
-	${FC} ${OPT} -Wl,--no-relax main.o bindmp.o setups.o -o ${EXE}
+	${FC} ${OPT} ${LOPT}  main.o bindmp.o setups.o -o ${EXE}
 
 .SUFFIXES: .f90 .o
 
@@ -41,3 +42,4 @@ bindmp.o: setups.o
 
 clean:
 	rm -fr *~ *.o *.mod ${EXE}
+
