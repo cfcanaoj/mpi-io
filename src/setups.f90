@@ -15,8 +15,8 @@
       end module  root
 
       module mpipara
+      use mpi
       implicit none
-      include "mpif.h"
       integer, parameter :: mreq  = 300
       integer :: stat(MPI_STATUS_SIZE,mreq)                     
       integer :: req(mreq)

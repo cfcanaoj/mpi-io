@@ -2,6 +2,7 @@
       implicit none
       private
       integer::SAG1D,SAG2D,SAG3D,SAD3D
+      integer :: commG1D,commG2D,commG3D
       public bindmp
       contains
 
@@ -19,13 +20,11 @@
       character(15) :: unffile
       character(40)::usrfile
       character(30) :: fpathbin,fpathunf
-      integer, parameter :: unitunf=560
-      integer,save:: unitd3d,unitg1d, unitg2d, unitg3d, unitg0d
+      integer,save:: unitd3d,unitg1d, unitg2d, unitg3d
       data unitd3d / 512 /
       data unitg1d / 513 /
       data unitg2d / 514 /
       data unitg3d / 515 /
-      data unitg0d / 516 /
 
       logical :: fileflag
 
@@ -43,9 +42,12 @@
       integer,dimension(4)::Asize,Ssize,Start
       integer(kind=MPI_OFFSET_KIND) idisp
       data idisp / 0 /
+      
+      integer::color,key
 
-!====================================================     
-      init1D: if(.not. is_inited .and. coords(2)==0 .and. coords(3)==0 )then
+!====================================================
+      init1D: if(.not. is_inited)then
+
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 1D GRID PREPARE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -76,13 +78,17 @@
      & ierr)
          call MPI_TYPE_COMMIT(SAG1D,ierr)
 
+      color =  coords(2)*ntiles(3)+coords(3)
+      key   =  coords(1)
+      call MPI_COMM_SPLIT(comm3d,color,key,commG1D,ierr)
+      if(color == 0) then
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 1D GRID WRITE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       write(unffile,"(a3,a2)")'g1d',id
       fpathbin = trim(datadir)//unffile
       
-      call MPI_FILE_OPEN(MPI_COMM_WORLD, &
+      call MPI_FILE_OPEN(commG1D, &
      &                         fpathbin, &! file path
      &  MPI_MODE_WRONLY+MPI_MODE_CREATE, &
      &            MPI_INFO_NULL,unitg1d,ierr)
@@ -101,10 +107,10 @@
      & MPI_DOUBLE_PRECISION, &
      & stat, ierr)
       call MPI_FILE_CLOSE(unitg1d,ierr)
-
+      endif
       endif init1D
 
-      init2D: if(.not. is_inited  .and. coords(1)==0 .and. coords(3)==0 )then
+      init2D: if(.not. is_inited)then
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2D GRID PREPARE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -135,13 +141,18 @@
      & ierr)
          call MPI_TYPE_COMMIT(SAG2D,ierr)
 
+      color =  coords(3)*ntiles(1)+coords(1)
+      key   =  coords(2)
+      call MPI_COMM_SPLIT(comm3d,color,key,commG2D,ierr)
+      if(color == 0) then
+         
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 2D GRID WRITE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       write(unffile,"(a3,a2)")'g2d',id
       fpathbin = trim(datadir)//unffile
       
-      call MPI_FILE_OPEN(MPI_COMM_WORLD, &
+      call MPI_FILE_OPEN(commG2D, &
      &                         fpathbin, & ! file path
      &  MPI_MODE_WRONLY+MPI_MODE_CREATE, &
      &            MPI_INFO_NULL,unitg2d,ierr)
@@ -160,10 +171,10 @@
      & stat, ierr)
       
       call MPI_FILE_CLOSE(unitg2d,ierr)
-
+      endif
       endif init2D
 
-      init3D: if(.not. is_inited  .and. coords(1)==0 .and. coords(2)==0 )then
+      init3D: if(.not. is_inited)then
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 3D GRID PREPARE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -194,13 +205,18 @@
      & ierr)
          call MPI_TYPE_COMMIT(SAG3D,ierr)
 
+      color =  coords(1)*ntiles(1)+coords(2)
+      key   =  coords(3)
+      call MPI_COMM_SPLIT(comm3d,color,key,commG3D,ierr)
+      if(color == 0) then
+      
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ! 3D GRID WRITE
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
       write(unffile,"(a3,a2)")'g3d',id
       fpathbin = trim(datadir)//unffile
 
-      call MPI_FILE_OPEN(MPI_COMM_WORLD, &
+      call MPI_FILE_OPEN(commG3D, &
      &                         fpathbin, &! file path
      &  MPI_MODE_WRONLY+MPI_MODE_CREATE, &
      &            MPI_INFO_NULL,unitg3d,ierr)
@@ -218,9 +234,8 @@
      & MPI_DOUBLE_PRECISION, &
      & stat, ierr)
       call MPI_FILE_CLOSE(unitg3d,ierr)
-
+      endif
       endif init3D
-
 
 !====================================================
       iss = 1; jss = 1; kss = 1
@@ -286,8 +301,7 @@
       call MPI_FILE_CLOSE(unitd3d,ierr)
 
       if (myid_w .eq. 0) then
-         write(6,"('Binary data dump written at time=',1pe12.5,&
-     &   ' cycle=',i0)") time,nhy
+         write(6,"('Binary data dump written at time=',1pe12.5,' cycle=',i0)") time,nhy
       endif
 
       is_inited = .true.

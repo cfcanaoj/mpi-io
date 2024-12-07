@@ -2,9 +2,9 @@
 # setup for XC50 of CfCA
 ##########################
 FC=mpiifx -fc=ifort -diag-disable=10448
-OPT=-g -O0 -check all -fpe0
+#OPT=-g -O0 -check all -fpe0
 #LOPT=-Wl,--no-relax
-#OPT=-g -O2
+OPT=-g -O2
 
 ##########################
 # setup for Msize Server

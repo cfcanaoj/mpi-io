@@ -1,10 +1,10 @@
 #!/bin/bash
 #SBATCH --job-name=testio
-#SBATCH --partition=P-large-cfca
+#SBATCH --partition=M-large-cfca
 #SBATCH --nodes=1
 #SBATCH --ntasks=8
 #SBATCH --ntasks-per-node=8
-#SBATCH --mem=400G
+#SBATCH --mem=100G
 #SBATCH -o slmlog%J.out
 
 # Go to this job's working directory
