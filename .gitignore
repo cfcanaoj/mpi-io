@@ -1,2 +1,6 @@
 
+iotest
+*~
 bindata/
+log.*
+slmlog*
