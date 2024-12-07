@@ -1,8 +1,9 @@
 ##########################
 # setup for XC50 of CfCA
 ##########################
-FC=ftn -extend-source
-OPT=-g -check all -fpe0
+FC=mpiifx -extend-source
+#OPT=-g -O0 -check all -fpe0
+OPT=-g -O2
 
 ##########################
 # setup for Msize Server
@@ -19,7 +20,7 @@ EXE=../iotest
 OBJ=  main.o setups.o bindmp.o
 
 ${EXE}: ${OBJ}
-	${FC} ${OPT} main.o bindmp.o setups.o -o ${EXE}
+	${FC} ${OPT} -Wl,--no-relax main.o bindmp.o setups.o -o ${EXE}
 
 .SUFFIXES: .f90 .o
 
