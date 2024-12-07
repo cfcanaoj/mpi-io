@@ -205,7 +205,7 @@
      & ierr)
          call MPI_TYPE_COMMIT(SAG3D,ierr)
 
-      color =  coords(1)*ntiles(1)+coords(2)
+      color =  coords(1)*ntiles(2)+coords(2)
       key   =  coords(3)
       call MPI_COMM_SPLIT(comm3d,color,key,commG3D,ierr)
       if(color == 0) then
